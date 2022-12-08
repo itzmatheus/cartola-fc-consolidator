@@ -1,3 +1,6 @@
+dev:
+	go run cmd/cartola/main.go
+
 docker-up:
 	docker-compose up -d
 
