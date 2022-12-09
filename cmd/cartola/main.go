@@ -50,6 +50,10 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Get("/players", httpHandler.ListPlayerHandler(ctx, *db.New(dtb)))
+	r.Get("/myTeam/{teamID}/players", httpHandler.ListMyTeamPlayers(ctx, *db.New(dtb)))
+	r.Get("/myTeam/{teamID}/balance", httpHandler.GetMyTeamBalanceHandler(ctx, *db.New(dtb)))
+	r.Get("/matches", httpHandler.ListMatchesHandler(ctx, repository.NewMatchRepository(dtb)))
+	r.Get("/matches/{matchID}", httpHandler.ListMatchByIDHandler(ctx, repository.NewMatchRepository(dtb)))
 
 	log.Println("Server running at port: " + SERVER_PORT)
 	if err = http.ListenAndServe(":"+SERVER_PORT, r); err != nil {

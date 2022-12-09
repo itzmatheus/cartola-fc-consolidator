@@ -194,7 +194,7 @@ func (q *Queries) FindAllPlayers(ctx context.Context) ([]Player, error) {
 }
 
 const findAllPlayersByIDs = `-- name: FindAllPlayersByIDs :many
-SELECT id, name, price FROM players WHERE id IN (?)
+SELECT id, name, price FROM players WHERE id IN ($1)
 `
 
 func (q *Queries) FindAllPlayersByIDs(ctx context.Context, id string) ([]Player, error) {
@@ -221,7 +221,7 @@ func (q *Queries) FindAllPlayersByIDs(ctx context.Context, id string) ([]Player,
 }
 
 const findMatchById = `-- name: FindMatchById :one
-SELECT id, match_date, team_a_id, team_a_name, team_b_id, team_b_name, result FROM matches WHERE id = ?
+SELECT id, match_date, team_a_id, team_a_name, team_b_id, team_b_name, result FROM matches WHERE id = $1
 `
 
 func (q *Queries) FindMatchById(ctx context.Context, id string) (Match, error) {
@@ -240,7 +240,7 @@ func (q *Queries) FindMatchById(ctx context.Context, id string) (Match, error) {
 }
 
 const findMyTeamById = `-- name: FindMyTeamById :one
-SELECT id, name, score FROM my_team WHERE id = ?
+SELECT id, name, score FROM my_team WHERE id = $1
 `
 
 func (q *Queries) FindMyTeamById(ctx context.Context, id string) (MyTeam, error) {
@@ -251,7 +251,7 @@ func (q *Queries) FindMyTeamById(ctx context.Context, id string) (MyTeam, error)
 }
 
 const findMyTeamByIdForUpdate = `-- name: FindMyTeamByIdForUpdate :one
-SELECT id, name, score FROM my_team WHERE id = ? FOR UPDATE
+SELECT id, name, score FROM my_team WHERE id = $1 FOR UPDATE
 `
 
 func (q *Queries) FindMyTeamByIdForUpdate(ctx context.Context, id string) (MyTeam, error) {
@@ -262,7 +262,7 @@ func (q *Queries) FindMyTeamByIdForUpdate(ctx context.Context, id string) (MyTea
 }
 
 const findPlayerById = `-- name: FindPlayerById :one
-SELECT id, name, price FROM players WHERE id = ?
+SELECT id, name, price FROM players WHERE id = $1
 `
 
 func (q *Queries) FindPlayerById(ctx context.Context, id string) (Player, error) {
@@ -273,7 +273,7 @@ func (q *Queries) FindPlayerById(ctx context.Context, id string) (Player, error)
 }
 
 const findPlayerByIdForUpdate = `-- name: FindPlayerByIdForUpdate :one
-SELECT id, name, price FROM players WHERE id = ? FOR UPDATE
+SELECT id, name, price FROM players WHERE id = $1 FOR UPDATE
 `
 
 func (q *Queries) FindPlayerByIdForUpdate(ctx context.Context, id string) (Player, error) {
@@ -284,7 +284,7 @@ func (q *Queries) FindPlayerByIdForUpdate(ctx context.Context, id string) (Playe
 }
 
 const findTeamById = `-- name: FindTeamById :one
-SELECT id, name FROM teams WHERE id = ?
+SELECT id, name FROM teams WHERE id = $1
 `
 
 func (q *Queries) FindTeamById(ctx context.Context, id string) (Team, error) {
@@ -295,7 +295,7 @@ func (q *Queries) FindTeamById(ctx context.Context, id string) (Team, error) {
 }
 
 const getMatchActions = `-- name: GetMatchActions :many
-SELECT id, match_id, team_id, player_id, action, minute, score FROM actions WHERE match_id = ?
+SELECT id, match_id, team_id, player_id, action, minute, score FROM actions WHERE match_id = $1
 `
 
 func (q *Queries) GetMatchActions(ctx context.Context, matchID string) ([]Action, error) {
@@ -365,7 +365,7 @@ func (q *Queries) GetMatchActionsForUpdate(ctx context.Context, matchID string) 
 }
 
 const getMyTeamBalance = `-- name: GetMyTeamBalance :one
-SELECT score as balance FROM my_team WHERE id = ?
+SELECT score as balance FROM my_team WHERE id = $1
 `
 
 func (q *Queries) GetMyTeamBalance(ctx context.Context, id string) (float64, error) {
@@ -376,7 +376,7 @@ func (q *Queries) GetMyTeamBalance(ctx context.Context, id string) (float64, err
 }
 
 const getPlayersByMyTeamID = `-- name: GetPlayersByMyTeamID :many
-SELECT p.id, p.name, p.price FROM players p INNER JOIN my_team_players mtp ON p.id = mtp.player_id WHERE mtp.my_team_id = ?
+SELECT p.id, p.name, p.price FROM players p INNER JOIN my_team_players mtp ON p.id = mtp.player_id WHERE mtp.my_team_id = $1
 `
 
 func (q *Queries) GetPlayersByMyTeamID(ctx context.Context, myTeamID string) ([]Player, error) {
