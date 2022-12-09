@@ -7,21 +7,28 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/go-chi/chi"
 	"github.com/itzmatheus/cartola-fc-consolidator/internal/infra/db"
 	httpHandler "github.com/itzmatheus/cartola-fc-consolidator/internal/infra/http"
+	"github.com/itzmatheus/cartola-fc-consolidator/internal/infra/kafka/consumer"
 	"github.com/itzmatheus/cartola-fc-consolidator/internal/infra/repository"
 	"github.com/itzmatheus/cartola-fc-consolidator/pkg/uow"
 	_ "github.com/lib/pq"
 )
 
 const (
-	DB_HOST     = "localhost"
-	DB_PORT     = 5432
-	DB_USER     = "consolidator"
-	DB_PASS     = "consolidator"
-	DB_NAME     = "consolidator"
-	SERVER_PORT = "8080"
+	DB_HOST      = "172.17.0.1"
+	DB_PORT      = 5432
+	DB_USER      = "consolidator"
+	DB_PASS      = "consolidator"
+	DB_NAME      = "consolidator"
+	SERVER_PORT  = "8080"
+	KAFKA_BROKER = "broker:9094"
+)
+
+var (
+	KAFKA_TOPICS = []string{"newMatch", "chooseTeam", "newPlayer", "matchUpdateResult", "newAction"}
 )
 
 func main() {
@@ -55,12 +62,12 @@ func main() {
 	r.Get("/matches", httpHandler.ListMatchesHandler(ctx, repository.NewMatchRepository(dtb)))
 	r.Get("/matches/{matchID}", httpHandler.ListMatchByIDHandler(ctx, repository.NewMatchRepository(dtb)))
 
+	go http.ListenAndServe(":"+SERVER_PORT, r)
 	log.Println("Server running at port: " + SERVER_PORT)
-	if err = http.ListenAndServe(":"+SERVER_PORT, r); err != nil {
-		log.Println("Not working")
-		panic(err)
-	}
 
+	msgChan := make(chan *kafka.Message)
+	go consumer.Consume(KAFKA_TOPICS, KAFKA_BROKER, msgChan)
+	consumer.ProcessEvents(ctx, msgChan, uow)
 }
 
 func registerRepositories(uow *uow.Uow) {
