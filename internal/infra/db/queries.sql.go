@@ -11,7 +11,7 @@ import (
 )
 
 const addPlayerToMyTeam = `-- name: AddPlayerToMyTeam :exec
-INSERT INTO my_team_players (my_team_id, player_id) VALUES (?, ?)
+INSERT INTO my_team_players (my_team_id, player_id) VALUES ($1, $2)
 `
 
 type AddPlayerToMyTeamParams struct {
@@ -25,7 +25,7 @@ func (q *Queries) AddPlayerToMyTeam(ctx context.Context, arg AddPlayerToMyTeamPa
 }
 
 const addScoreToTeam = `-- name: AddScoreToTeam :exec
-UPDATE my_team SET score = score + ? WHERE id = ?
+UPDATE my_team SET score = score + $1 WHERE id = $2
 `
 
 type AddScoreToTeamParams struct {
@@ -39,7 +39,7 @@ func (q *Queries) AddScoreToTeam(ctx context.Context, arg AddScoreToTeamParams) 
 }
 
 const createAction = `-- name: CreateAction :exec
-INSERT INTO actions (id, match_id, team_id, player_id, action, score, minute) VALUES (?, ?, ?, ?, ?, ?,?)
+INSERT INTO actions (id, match_id, team_id, player_id, action, score, minute) VALUES ($1, $2, $3, $4, $5, $6, $7)
 `
 
 type CreateActionParams struct {
@@ -66,7 +66,7 @@ func (q *Queries) CreateAction(ctx context.Context, arg CreateActionParams) erro
 }
 
 const createMatch = `-- name: CreateMatch :exec
-INSERT INTO matches (id, match_date, team_a_id, team_a_name, team_b_id, team_b_name, result) VALUES (?, ?, ?, ?, ?, ?, ?)
+INSERT INTO matches (id, match_date, team_a_id, team_a_name, team_b_id, team_b_name, result) VALUES ($1, $2, $3, $4, $5, $6, $7)
 `
 
 type CreateMatchParams struct {
@@ -93,7 +93,7 @@ func (q *Queries) CreateMatch(ctx context.Context, arg CreateMatchParams) error 
 }
 
 const createMyTeam = `-- name: CreateMyTeam :exec
-INSERT INTO my_team (id, name, score) VALUES (?, ?, ?)
+INSERT INTO my_team (id, name, score) VALUES ($1, $2, $3)
 `
 
 type CreateMyTeamParams struct {
@@ -108,7 +108,7 @@ func (q *Queries) CreateMyTeam(ctx context.Context, arg CreateMyTeamParams) erro
 }
 
 const createPlayer = `-- name: CreatePlayer :exec
-INSERT INTO players (id, name, price) VALUES (?, ?, ?)
+INSERT INTO players (id, name, price) VALUES ($1, $2, $3)
 `
 
 type CreatePlayerParams struct {
@@ -123,7 +123,7 @@ func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) erro
 }
 
 const deleteAllPlayersFromMyTeam = `-- name: DeleteAllPlayersFromMyTeam :exec
-DELETE FROM my_team_players WHERE my_team_id = ?
+DELETE FROM my_team_players WHERE my_team_id = $1
 `
 
 func (q *Queries) DeleteAllPlayersFromMyTeam(ctx context.Context, myTeamID string) error {
@@ -330,7 +330,7 @@ func (q *Queries) GetMatchActions(ctx context.Context, matchID string) ([]Action
 }
 
 const getMatchActionsForUpdate = `-- name: GetMatchActionsForUpdate :many
-SELECT id, match_id, team_id, player_id, action, minute, score FROM actions WHERE match_id = ? FOR UPDATE
+SELECT id, match_id, team_id, player_id, action, minute, score FROM actions WHERE match_id = $1 FOR UPDATE
 `
 
 func (q *Queries) GetMatchActionsForUpdate(ctx context.Context, matchID string) ([]Action, error) {
@@ -403,7 +403,7 @@ func (q *Queries) GetPlayersByMyTeamID(ctx context.Context, myTeamID string) ([]
 }
 
 const removeActionFromMatch = `-- name: RemoveActionFromMatch :exec
-DELETE FROM actions WHERE match_id = ?
+DELETE FROM actions WHERE match_id = $1
 `
 
 func (q *Queries) RemoveActionFromMatch(ctx context.Context, matchID string) error {
@@ -412,7 +412,7 @@ func (q *Queries) RemoveActionFromMatch(ctx context.Context, matchID string) err
 }
 
 const updateMatch = `-- name: UpdateMatch :exec
-UPDATE matches SET match_date = ?, team_a_id = ?, team_a_name = ?, team_b_id = ?, team_b_name = ?, result = ? WHERE id = ?
+UPDATE matches SET match_date = $1, team_a_id = $2, team_a_name = $3, team_b_id = $4, team_b_name = $5, result = $6 WHERE id = $7
 `
 
 type UpdateMatchParams struct {
@@ -439,7 +439,7 @@ func (q *Queries) UpdateMatch(ctx context.Context, arg UpdateMatchParams) error 
 }
 
 const updateMyTeamScore = `-- name: UpdateMyTeamScore :exec
-UPDATE my_team SET score = ? WHERE id = ?
+UPDATE my_team SET score = $1 WHERE id = $2
 `
 
 type UpdateMyTeamScoreParams struct {
@@ -453,7 +453,7 @@ func (q *Queries) UpdateMyTeamScore(ctx context.Context, arg UpdateMyTeamScorePa
 }
 
 const updateMyTeamsScore = `-- name: UpdateMyTeamsScore :exec
-UPDATE my_team SET score = ? WHERE id IN (?)
+UPDATE my_team SET score = $1 WHERE id IN ($2)
 `
 
 type UpdateMyTeamsScoreParams struct {
@@ -467,7 +467,7 @@ func (q *Queries) UpdateMyTeamsScore(ctx context.Context, arg UpdateMyTeamsScore
 }
 
 const updatePlayer = `-- name: UpdatePlayer :exec
-UPDATE players SET name = ?, price = ? WHERE id = ?
+UPDATE players SET name = $1, price = $2 WHERE id = $3
 `
 
 type UpdatePlayerParams struct {

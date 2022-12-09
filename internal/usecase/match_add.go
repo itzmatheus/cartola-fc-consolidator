@@ -10,14 +10,20 @@ import (
 )
 
 type MatchInput struct {
-	ID      string
-	Date    time.Time
-	TeamAID string
-	TeamBID string
+	ID      string    `json:"id"`
+	Date    time.Time `json:"match_date"`
+	TeamAID string    `json:"team_a_id"`
+	TeamBID string    `json:"team_b_id"`
 }
 
 type MatchUseCase struct {
 	Uow uow.UowInterface
+}
+
+func NewMatchUseCase(uow uow.UowInterface) *MatchUseCase {
+	return &MatchUseCase{
+		Uow: uow,
+	}
 }
 
 func (a *MatchUseCase) getMatchRepository(ctx context.Context) repository.MatchRepositoryInterface {

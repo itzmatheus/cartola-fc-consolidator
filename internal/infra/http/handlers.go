@@ -3,7 +3,6 @@ package http
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -77,7 +76,6 @@ func ListMatchByIDHandler(ctx context.Context, matchRepository irepository.Match
 func GetMyTeamBalanceHandler(ctx context.Context, queries db.Queries) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		teamID := chi.URLParam(r, "teamID")
-		fmt.Println(teamID)
 		balance, err := queries.GetMyTeamBalance(ctx, teamID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
